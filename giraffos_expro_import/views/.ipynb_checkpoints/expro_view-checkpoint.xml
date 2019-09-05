@@ -1,0 +1,122 @@
+<odoo>
+    <data>
+
+        <record id="expro_siniestro_view" model="ir.ui.view">
+            <field name="name">expro.siniestro.form</field>
+            <field name="model">expro.siniestro</field>
+            <field name="arch" type="xml">
+                <form string="Registros">
+                    <group>
+                        <field name="fecha_ingreso"/>
+                        <field name="rut"/>
+                        <field name="nombre"/>
+                        <field name="tipo_accidente"/>
+                        <field name="estado_calificacion"/>
+                        <field name="reingreso"/>
+                        <field name="fecha_inicio_reposo"/>
+                        <field name="fecha_termino_reposo"/>
+                        <field name="dias_licencia"/>
+                        <field name="centro_costo"/>
+                        <field name="razon_social"/>
+                        <field name="periodo"/>
+                        <field name="archivo_procesado"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="expro_siniestro_tree" model="ir.ui.view">
+            <field name="name">expro.siniestro.tree</field>
+            <field name="model">expro.siniestro</field>
+            <field name="arch" type="xml">
+                <tree string="Registros">
+                    <field name="nombre"/>
+                    <field name="rut"/>
+                    <field name="tipo_accidente"/>
+                    <field name="estado_calificacion"/>
+                    <field name="reingreso"/>
+                    <field name="fecha_inicio_reposo"/>
+                    <field name="fecha_termino_reposo"/>
+                    <field name="dias_licencia"/>
+                    <field name="centro_costo"/>
+                    <field name="razon_social"/>
+                    <field name="periodo"/>
+                    <field name="archivo_procesado"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="expro_siniestro_action" model="ir.actions.act_window">
+            <field name="name">Expro Siniestros</field>
+            <field name="res_model">expro.siniestro</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+                id="menu_expro_siniestro"
+                action="expro_siniestro_action"
+                name="Registros"
+                parent="menu_expro"
+                sequence="1"/>
+
+
+        <!-- Periodo -->
+
+        <record id="expro_siniestro_periodo_tree" model="ir.ui.view">
+            <field name="name">expro.siniestro.periodo.tree</field>
+            <field name="model">expro.siniestro.periodo</field>
+            <field name="arch" type="xml">
+                <tree string="Siniestros" editable="bottom">
+                    <field name="name"/>
+                    <field name="fecha_inicio"/>
+                    <field name="fecha_fin"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="expro_siniestro_periodo_action" model="ir.actions.act_window">
+            <field name="name">Periodos</field>
+            <field name="res_model">expro.siniestro.periodo</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <menuitem
+                id="menu_expro_siniestro_periodo"
+                action="expro_siniestro_periodo_action"
+                name="Periodos"
+                parent="menu_expro"
+                sequence="3"/>
+        
+        <!-- Dias Perdidos -->
+        <record id="expro_siniestro_dias_perdidos_tree" model="ir.ui.view">
+            <field name="name">expro.siniestro.dias.peridos.tree</field>
+            <field name="model">expro.siniestro.dias.perdidos</field>
+            <field name="arch" type="xml">
+                <tree string="Dias Perdidos">
+                    <field name="dias_perdidos"/>
+                    <field name="mes"/>
+                    <field name="periodo"/>
+                    <field name="centro_costo"/>
+                    <field name="arrastre"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="expro_siniestro_dias_perdidos_action" model="ir.actions.act_window">
+            <field name="name">Dias Perdidos</field>
+            <field name="res_model">expro.siniestro.dias.perdidos</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+        </record>
+        
+        <menuitem
+                id="menu_expro_siniestro_dias_perdidos"
+                action="expro_siniestro_dias_perdidos_action"
+                name="Dias Perdidos"
+                parent="menu_expro"
+                sequence="4"/>
+
+    </data>
+</odoo>

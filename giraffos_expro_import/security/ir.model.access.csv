@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+expro_import_siniestro_users,access.expro.siniestro,giraffos_expro_import.model_expro_siniestro,,1,1,1,1
+expro_import_siniestro_periodo_users,access.expro.siniestro.periodo,giraffos_expro_import.model_expro_siniestro_periodo,,1,1,1,1
+expro_import_siniestro_dias_perdidos_users,access.expro.siniestro.dias.perdidos,giraffos_expro_import.model_expro_siniestro_dias_perdidos,,1,1,1,1

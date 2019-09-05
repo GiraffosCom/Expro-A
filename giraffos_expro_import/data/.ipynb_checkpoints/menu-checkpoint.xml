@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+        <menuitem
+            id="menu_expro"
+            name="Expro"
+            web_icon="giraffos_expro_import,static/description/icon.png"
+            sequence="90"/>
+    </data>
+</odoo>
