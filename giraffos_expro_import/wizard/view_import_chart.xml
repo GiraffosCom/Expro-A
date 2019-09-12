@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="wizard_import_expro_siniestro" model="ir.ui.view">
+            <field name="name">import.expro.siniestro.form</field>
+            <field name="model">import.expro.siniestro</field>
+            <field name="arch" type="xml">
+                <form string="Importar Siniestros">
+                    <group>
+						<field name="name" invisible="1"/>
+                        <field name="archivo" filename="name"/>
+                    </group>
+                    <footer>
+                        <button string="Importar" name="import_archivo"
+                                type="object" class="oe_highlight"/>
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="wizard_import_expro_siniestro_action" model="ir.actions.act_window">
+            <field name="name">Importar Expro</field>
+            <field name="res_model">import.expro.siniestro</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="wizard_import_expro_siniestro"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="wizard_import_expro_siniestro_menu"
+                action="wizard_import_expro_siniestro_action"
+                name="Importar XLS"
+				parent="menu_expro"
+                sequence="2"/>
+
+    </data>
+</odoo>

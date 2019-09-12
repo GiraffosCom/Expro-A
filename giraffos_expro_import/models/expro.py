@@ -1,0 +1,119 @@
+# -*- coding: utf-8 -*-
+
+from odoo import models, fields, api, _
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
+import logging
+import datetime
+_logger = logging.getLogger(__name__)
+
+class ExproSiniestro(models.Model):
+    _name = 'expro.siniestro'
+
+    fecha_ingreso = fields.Date(string='Fecha Ingreso')
+    rut = fields.Char(string='RUT')
+    nombre = fields.Char(string='Nombre')
+    tipo_accidente = fields.Char(string='Tipo Accidente')
+    estado_calificacion = fields.Char(string='Estado Calificacion')
+    reingreso = fields.Char(string='Reingreso')
+    fecha_inicio_reposo = fields.Date(string='Fecha Inicio Reposo')
+    fecha_termino_reposo = fields.Date(string='Fecha Termino Reposo')
+    dias_licencia = fields.Integer(string='Dias Licencia')
+    centro_costo = fields.Char(string='Centro de costo')
+    rs_id=fields.Integer(string='Id Razón Social')
+    rs_des=fields.Char(comodel_name='expro.siniestro.razon.social',string='Razón Social', compute='_get_razon_social', store=True)
+    periodo = fields.Integer(comodel_name='expro.siniestro.periodo', string='Periodo', compute='_get_periodo', store=True)
+    archivo_procesado = fields.Char('Archivo')
+
+    @api.multi
+    @api.depends('fecha_inicio_reposo')
+    def _get_periodo(self):
+        for siniestro in self:
+            periodo_id = self.env['expro.siniestro.periodo'].search([('fecha_inicio','<=',siniestro.fecha_inicio_reposo),('fecha_fin','>=',siniestro.fecha_inicio_reposo)], limit=1).name
+            siniestro.periodo = periodo_id
+
+    @api.multi
+    @api.depends('rs_id')
+    def _get_razon_social(self):
+        for siniestro in self:
+            var=self.env['expro.siniestro.razon.social'].search([('codigo','=',siniestro.rs_id)],limit=1).rsocial
+            #_logger.info('_RS_ {c}:'.format(c=var)) 
+            siniestro.rs_des =var
+
+class ExproSiniestroPeriodo(models.Model):
+    _name = 'expro.siniestro.periodo'
+
+    name = fields.Integer('Nº Periodo')
+    fecha_inicio = fields.Date('Fecha Inicio')
+    fecha_fin = fields.Date('Fecha Fin')
+
+class ExproSiniestroDP(models.Model):
+    _name = 'expro.siniestro.dias.perdidos'
+    
+    dias_perdidos=fields.Integer(string='Días Perdidos')
+    mes=fields.Char(string='Mes')
+    mes_id=fields.Char(string='ID MES')
+    periodo=fields.Integer(string='Periodo')
+    centro_costo=fields.Char(string='Centro de costo')
+    codigo_rs=fields.Integer(string='Id Razón Social')
+    rs=fields.Char(string='Razón Social')
+    arrastre=fields.Char(string='Arrastre')
+
+class ExproSiniestroRazonSocial(models.Model):
+    _name ='expro.siniestro.razon.social'
+
+    codigo=fields.Integer(string='Código RS')
+    rsocial=fields.Char(string='Razón Social')
+    worker_num=fields.Integer(string='Nº Trabajadores')
+    
+class ExproSiniestroTasas(models.Model):
+    _name = 'expro.siniestro.tasas'
+    
+    rango_inferior=fields.Integer(string='Rango Inferior')
+    rango_superior=fields.Integer(string='Rango Superior')
+    cotizacion_adicional=fields.Float(string='Cotización Adicional')
+    tasa_total=fields.Float(string='Tasa Total')
+    situacion_acutal=fields.Boolean(string='Situación Actual')
+    situacion_proyectada = fields.Boolean(string='Situación Proyectada')
+    codigo_rs=fields.Integer(string='Código RS')
+    #rs_des=fields.Char(comodel_name='expro.siniestro.razon.social',string='Razón Social', compute='_get_razon_social', store=True)
+    rs_des=fields.Char(string='Razón Social')
+
+    #Sirve para que en el Form se ingrese el codigo_rs y se obtenga el rs_des en el tree view
+    #@api.multi
+    #@api.depends('codigo_rs')
+    #def _get_razon_social(self):
+        #for record in self:
+            #var=self.env['expro.siniestro.razon.social'].search([('codigo','=',record.codigo_rs)],limit=1).rsocial
+            #record.rs_des =var
+    
+class ExproSiniestroProyeccion(models.Model):
+    _name = 'expro.siniestro.proyeccion'
+
+    rs = fields.Char(string='Razón Social')
+    per_id = fields.Integer('Nº Periodo')
+    mes = fields.Char(string='Mes')
+    estado = fields.Selection([('cerrado','Cerrado'),('en_curso','En Curso'),('proyectado','Proyectado')], 'Estado', compute='_get_estado')
+    tasa_siniestralidad_periodo=fields.Float('Tasa Periodo')
+    tasa_mensual = fields.Float('Tasa Mensual')
+    num_trabajadores_promedio_mensual=fields.Integer('Numero de Trabajadores Promedio Mensual')
+    tst_max_actual = fields.Float('Tasa máxima actual')
+    tst_max_proyectada = fields.Float('Tasa máxima proyectada')
+    dp_max_mes=fields.Integer('Días perdidos máximo por mes')
+    dp_max_periodo=fields.Integer('Días perdidos máximo por periodo')
+
+    @api.multi
+    @api.depends('per_id')
+    def _get_estado(self):
+        for proyeccion in self:
+            periodo_id = self.env['expro.siniestro.periodo'].search([('name','=',proyeccion.per_id)], limit=1)
+            if periodo_id:
+                pfi = periodo_id.fecha_inicio
+                pff = periodo_id.fecha_fin
+
+                if datetime.date.today() < pff and datetime.date.today() >= pfi:
+                    proyeccion.estado = 'en_curso'
+                elif datetime.date.today() > pff:
+                    proyeccion.estado = 'cerrado'
+                elif datetime.date.today() < pfi:
+                    proyeccion.estado = 'proyectado'
+
