@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-	'name': 'Expro Accidentes',
+	'name': 'Decreto67',
 	'summary': '',
 	'description': '''
 	''',
